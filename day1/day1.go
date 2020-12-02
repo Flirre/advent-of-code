@@ -15,19 +15,18 @@ func main() {
 		for j, secondValue := range input {
 			if j <= i {
 				continue
+			}
+			if !secondStar {
+				if value+secondValue == 2020 {
+					calculateExpense(value, secondValue)
+				}
 			} else {
-				if !secondStar {
-					if value+secondValue == 2020 {
-						calculateExpense(value, secondValue)
-					}
-				} else {
-					for k, thirdValue := range input {
-						if k <= i || k <= j {
-							continue
-						} else {
-							if value+secondValue+thirdValue == 2020 {
-								calculateMoreExpenses(value, secondValue, thirdValue)
-							}
+				for k, thirdValue := range input {
+					if k <= i || k <= j {
+						continue
+					} else {
+						if value+secondValue+thirdValue == 2020 {
+							calculateMoreExpenses(value, secondValue, thirdValue)
 						}
 					}
 				}
