@@ -9,7 +9,6 @@ import (
 	"strconv"
 )
 
-// ([a-z]+ \w+\S|\d+ \w+ \w+)\b(?<!bags|contain|contains)
 func getInput() []string {
 	var inputs []string
 	file, err := os.Open("input")
@@ -35,24 +34,24 @@ func getInput() []string {
 // lack of negative lookbehind makes this regex solution less elegant
 func main() {
 	bags := make(map[string][]string)
+	bags2 := make(map[string][]string)
 	bagsAr := make([]string, 0)
+	bagsAr2 := make([]string, 0)
 	var pattern = regexp.MustCompile(`([a-z]+\s\w+\S|\d\s\w+\s\w+)`)
 	var colorOnly = regexp.MustCompile(`([a-z]+\s[a-z]+)`)
-	//	var nrOnly = regexp.MustCompile(`\d+`)
 	var nrAndName = regexp.MustCompile(`(\d+\s\w+\s\w+)`)
 	input := getInput()
-	// for _, bag := range input {
-	// 	matches := pattern.FindAllString(bag, -1)
-	// 	parentBag := matches[0]
-	// 	for _, name := range matches {
-	// 		trimmedBagName := colorOnly.FindAllString(name, -1)
-	// 		bagNr := nrOnly.FindAllString(name, -1)
-	// 		if "bags contain" == trimmedBagName[0] || "no other" == trimmedBagName[0] || parentBag == trimmedBagName[0] {
-	// 			continue
-	// 		}
-	// 		bags[trimmedBagName[0]] = append(bags[trimmedBagName[0]], parentBag)
-	// 	}
-	// }
+	for _, bag := range input {
+		matches := pattern.FindAllString(bag, -1)
+		parentBag := matches[0]
+		for _, name := range matches {
+			trimmedBagName := colorOnly.FindAllString(name, -1)
+			if "bags contain" == trimmedBagName[0] || "no other" == trimmedBagName[0] || parentBag == trimmedBagName[0] {
+				continue
+			}
+			bags[trimmedBagName[0]] = append(bags[trimmedBagName[0]], parentBag)
+		}
+	}
 	for _, bag2 := range input {
 		matches2 := pattern.FindAllString(bag2, -1)
 		parentBag2 := matches2[0]
@@ -64,17 +63,17 @@ func main() {
 				continue
 			}
 			if "no other" == trimmedBagName2[0] {
-				bags[parentBag2] = append(bags[parentBag2], "1")
+				bags2[parentBag2] = append(bags2[parentBag2], "1")
 			} else {
-				bags[parentBag2] = append(bags[parentBag2], trimmedBagName3[0])
+				bags2[parentBag2] = append(bags2[parentBag2], trimmedBagName3[0])
 			}
 		}
 	}
-	// b := bagToTop("shiny gold", bags, &bagsAr)
-	// c := removeDuplicates(*b)
-	// fmt.Println("Answer part 1:", len(c)-1)
-	b := bagToBottom("shiny gold", bags, &bagsAr, 1)
-	fmt.Println("Answer part 2:", len(*b)-1)
+	b := bagToTop("shiny gold", bags, &bagsAr)
+	c := removeDuplicates(*b)
+	fmt.Println("Answer part 1:", len(c)-1)
+	d := bagToBottom("shiny gold", bags2, &bagsAr2, 1)
+	fmt.Println("Answer part 2:", len(*d)-1)
 }
 
 func bagToTop(bagPtrn string, bags map[string][]string, bagsAr *[]string) *[]string {
@@ -93,7 +92,6 @@ func bagToBottom(bagPtrn string, bags map[string][]string, bagsAr *[]string, cou
 	for i := 0; i < count; i++ {
 		*bagsAr = append(*bagsAr, bagPtrn)
 	}
-
 	for _, bag := range bags[bagPtrn] {
 		if bag == "1" {
 			return bagsAr
