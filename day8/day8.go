@@ -34,29 +34,36 @@ func getInput() []string {
 func main() {
 	instructions := getInput()
 	executedInstructions := make(map[int]string)
-	i := 0
+
+	reversedInstructions := make(map[string]string)
+	reversedInstructions["nop"] = "jmp"
+	reversedInstructions["jmp"] = "nop"
+	reversedInstructions["acc"] = "acc"
+
+	PC := 0
 	accumulator := 0
-	for i < len(instructions) {
-		if executedInstructions[i] != "" {
-			fmt.Println(i)
+	for PC < len(instructions) {
+		instruction, modifier := parseInstruction(instructions[PC])
+		if executedInstructions[PC] != "" {
 			break
 		}
-		// fmt.Println(i, instructions[i])
-		splitInstruction := strings.Split(instructions[i], " ")
-		executedInstructions[i] = instructions[i]
-		instruction := splitInstruction[0]
-		modifier, _ := strconv.Atoi(splitInstruction[1])
+		executedInstructions[PC] = instructions[PC]
 		switch instruction {
 		case "nop":
-			//fmt.Println("NOP", i)
-			i += 1
+			PC += 1
 		case "acc":
-			i += 1
+			PC += 1
 			accumulator += modifier
 		case "jmp":
-			//fmt.Println("JMP", i)
-			i += modifier
+			PC += modifier
 		}
 	}
-	fmt.Println("\n\n\nanswer p1", accumulator)
+	fmt.Println("\nanswer p1", accumulator)
+}
+
+func parseInstruction(instr string) (string, int) {
+	splitInstruction := strings.Split(instr, " ")
+	instruction := splitInstruction[0]
+	modifier, _ := strconv.Atoi(splitInstruction[1])
+	return instruction, modifier
 }
